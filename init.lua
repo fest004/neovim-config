@@ -1,5 +1,8 @@
 --[[
 
+
+
+
 =====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
 =====================================================================
@@ -43,6 +46,7 @@ What is Kickstart?
 
 Kickstart Guide:
 
+
   TODO: The very first thing you should do is to run the command `:Tutor` in Neovim.
 
     If you don't know what this means, type the following:
@@ -72,6 +76,7 @@ Kickstart Guide:
 
    NOTE: Look for lines like this
 
+
     Throughout the file. These are for you, the reader, to help you understand what is happening.
     Feel free to delete them once you know what you're doing, but they should serve as a guide
     for when you are first encountering a few different constructs in your Neovim config.
@@ -91,14 +96,15 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
 
--- Make line numbers default
+-- Make hybrid numbers
+vim.opt.relativenumber = true
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
@@ -223,10 +229,38 @@ vim.opt.rtp:prepend(lazypath)
 --  To update plugins you can run
 --    :Lazy update
 --
+-- Load plugin and setup configuration
+
+-- Load additional plugin dependencies
+
+-- Import lush module
+
+-- local lush = require 'lush'
+
+-- Load your colorscheme
+
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+
+  {
+    'windwp/nvim-autopairs',
+    event = 'InsertEnter',
+    config = true,
+    -- use opts = {} for passing setup options
+    -- this is equalent to setup({}) function
+  },
+
+  {
+    'rktjmp/lush.nvim',
+  },
+
+  {
+    'ellisonleao/gruvbox.nvim',
+    lazy = false, -- make sure we load this during startup if it is your main colorscheme
+    priority = 1000, -- make sure to load this before all the other start plugins
+  },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -240,6 +274,38 @@ require('lazy').setup({
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim', opts = {} },
 
+  {
+    'stevearc/oil.nvim',
+    opts = {
+      default_file_explorer = true,
+
+      keymaps = {
+        ['g?'] = 'actions.show_help',
+        ['<CR>'] = 'actions.select',
+        ['<C-s>'] = 'actions.select_vsplit',
+        ['<C-h>'] = 'actions.select_split',
+        ['<C-t>'] = 'actions.select_tab',
+        ['<C-p>'] = 'actions.preview',
+        ['<C-c>'] = 'actions.close',
+        ['<C-l>'] = 'actions.refresh',
+        ['-'] = 'actions.parent',
+        ['_'] = 'actions.open_cwd',
+        ['`'] = 'actions.cd',
+        ['~'] = 'actions.tcd',
+        ['gs'] = 'actions.change_sort',
+        ['gx'] = 'actions.open_external',
+        ['g.'] = 'actions.toggle_hidden',
+        ['g\\'] = 'actions.toggle_trash',
+      },
+      -- Configuration for the floating keymaps help window
+      keymaps_help = {
+        Border = 'rounded',
+      },
+      -- Set to false to disable all of the above keymaps
+      use_default_keymaps = true,
+    },
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+  },
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
   --    require('gitsigns').setup({ ... })
@@ -347,6 +413,77 @@ require('lazy').setup({
       -- Telescope picker. This is really useful to discover what Telescope can
       -- do as well as how to actually do it!
 
+      -- Define the colorscheme
+      -- Load the colorscheme
+
+      -- Define the colorscheme
+
+      -- Load Gruvbox colorscheme
+
+      require('gruvbox').setup {
+        overrides = {
+          Funtion = { fg = '#666666' },
+        },
+      }
+      vim.cmd 'colorscheme gruvbox'
+
+      --[[
+
+      local theme = require 'lush'(function()
+        return {
+          -- Base colors
+          Normal { fg = '#bdb166', bg = '#454545' }, -- Example Normal text color
+          Comment { fg = '#aa9372' }, -- Example Comment text color
+          String { fg = '#f06662' }, -- Example String text color
+
+          -- Interface components
+          Cursor { fg = '#ffffff', bg = '#000000' }, -- Example cursor color
+          CursorLine { bg = '#333333' }, -- Example cursor line color
+          Visual { bg = '#4e4e4e' }, -- Example visual selection color
+          VisualNOS { bg = '#4e4e4e' }, -- Example visual selection color in terminal
+
+          -- Syntax highlighting
+          Type { fg = '#abc5d1' }, -- Example Type color (e.g., class, function, struct)
+          Function { fg = '#f06662' }, -- Example Function color
+          Identifier { fg = '#bdb166' }, -- Example Identifier color (e.g., variable, parameter)
+
+          -- Line numbers and gutter
+          LineNr { fg = '#f06662' }, -- Example line number color
+          SignColumn { fg = '#aa9372' }, -- Example sign column color
+
+          -- Error, warning, and info messages
+          ErrorMsg { fg = '#f06662' }, -- Example error message color
+          WarningMsg { fg = '#f06662' }, -- Example warning message color
+          MoreMsg { fg = '#abc5d1' }, -- Example more message color
+
+          -- Search highlighting
+          Search { fg = '#ffffff', bg = '#4e4e4e' }, -- Example search highlight color
+          IncSearch { fg = '#ffffff', bg = '#4e4e4e' }, -- Example incremental search highlight color
+
+          -- Diff mode
+          DiffAdd { fg = '#abc5d1', bg = '#454545' }, -- Example diff add color
+          DiffChange { fg = '#f06662', bg = '#454545' }, -- Example diff change color
+          DiffDelete { fg = '#f06662', bg = '#454545' }, -- Example diff delete color
+
+          -- Status line
+          StatusLine { fg = '#aa9372', bg = '#333333' }, -- Example status line color
+          StatusLineNC { fg = '#555555', bg = '#333333' }, -- Example status line (non-current window) color
+
+          -- Tab line
+          TabLine { fg = '#aa9372', bg = '#333333' }, -- Example tab line color
+          TabLineFill { bg = '#333333' }, -- Example tab line fill color
+          TabLineSel { fg = '#ffffff', bg = '#4e4e4e' }, -- Example tab line selected color
+
+          -- Folded text
+          Folded { fg = '#555555', bg = '#333333' }, -- Example folded text color
+        }
+      end)
+
+      -- Load the colorscheme
+      require 'lush'(theme)
+
+]]
+      --
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
       require('telescope').setup {
@@ -469,14 +606,14 @@ require('lazy').setup({
           -- Jump to the definition of the word under your cursor.
           --  This is where a variable was first declared, or where a function is defined, etc.
           --  To jump back, press <C-t>.
-          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+          map('gd', require('telescope.builtin').lsp_implementations, '[G]oto [D]efinition')
 
           -- Find references for the word under your cursor.
           map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
 
           -- Jump to the implementation of the word under your cursor.
           --  Useful when your language has ways of declaring types without an actual implementation.
-          map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+          map('gm', require('telescope.builtin').lsp_definitions, '[G]oto I[M]plementation')
 
           -- Jump to the type of the word under your cursor.
           --  Useful when you're not sure what type a variable is and you want to see
@@ -497,7 +634,7 @@ require('lazy').setup({
 
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
-          map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+          map('<leader>lr', vim.lsp.buf.code_action, 'Code Action [lr]')
 
           -- Opens a popup that displays documentation about the word under your cursor
           --  See `:help K` for why this keymap.
@@ -718,9 +855,11 @@ require('lazy').setup({
         -- No, but seriously. Please read `:help ins-completion`, it is really good!
         mapping = cmp.mapping.preset.insert {
           -- Select the [n]ext item
-          ['<C-n>'] = cmp.mapping.select_next_item(),
+
+          ['<C-Enter>'] = cmp.mapping.select_next_item(),
+          ['<S-j>'] = cmp.mapping.select_next_item(),
           -- Select the [p]revious item
-          ['<C-p>'] = cmp.mapping.select_prev_item(),
+          ['<S-k>'] = cmp.mapping.select_prev_item(),
 
           -- Scroll the documentation window [b]ack / [f]orward
           ['<C-b>'] = cmp.mapping.scroll_docs(-4),
@@ -729,13 +868,14 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
-
+          ['<enter>'] = cmp.mapping.confirm { select = true },
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
           --['<CR>'] = cmp.mapping.confirm { select = true },
           --['<Tab>'] = cmp.mapping.select_next_item(),
           --['<S-Tab>'] = cmp.mapping.select_prev_item(),
+          --
+          --
 
           -- Manually trigger a completion from nvim-cmp.
           --  Generally you don't need this, because nvim-cmp will display
@@ -784,7 +924,7 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      vim.cmd.colorscheme 'gruvbox'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
@@ -907,6 +1047,5 @@ require('lazy').setup({
     },
   },
 })
-
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
